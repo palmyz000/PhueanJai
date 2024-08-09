@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&family=Sriracha&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&family=Sriracha&display=swap"
+        rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet" />
+    <style>
+        body {
+            font-family: 'Mitr', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .profile-card {
+            margin-top: 50px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-img {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-info {
+            margin-top: 20px;
+        }
+
+        .profile-info h5 {
+            margin-bottom: 10px;
+        }
+
+        .profile-info p {
+            margin-bottom: 5px;
+        }
+
+        .score-card {
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation-->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+        <div class="container px-4">
+            <a class="navbar-brand" href="#page-top">
+                <img src="css/image/Phuean_Jai_removebg-preview.png" alt="Phuean Jai Logo"> Phuean Jai
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto">
+
+                </ul>
+                <div class="col-4 d-flex justify-content-end align-items-center">
+                    <% if (loggedIn) { %>
+                        <a class="btn btn-sm btn-info mx-3" href="/home">หน้าหลัก</a>
+                        <a class="btn btn-sm btn-danger" href="/logout">ออกจากระบบ</a>
+                        <% } %>
+                            <% if (!loggedIn) { %>
+                                <a class="btn btn-sm btn-outline-secondary mx-3" href="/">เข้าสู่ระบบ</a>
+                                <a class="btn btn-sm btn-success" href="/register">ลงทะเบียน</a>
+                                <% } %>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container mt-5 pt-5">
+        <!-- Data Attributes for Scores -->
+        <div id="scoreData" data-total-score-voice="<%= user.totalScoreVoice != null ? user.totalScoreVoice : 'null' %>"
+            data-total-score-choice="<%= user.totalScoreChoice != null ? user.totalScoreChoice : 'null' %>">
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="profile-card text-center">
+                    <img src="css/image/avatar.png" class="profile-img" alt="User Image">
+                    <h3 style="padding-top: 3%;">
+                        <%= user.username %>
+                    </h3>
+                    <p>
+                        <%= user.email %>
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="profile-card">
+                    <div class="profile-info">
+                        <h5>Bio Graph</h5>
+                        <p><strong>First Name:</strong>
+                            <%= user.username %>
+                        </p>
+                        <p><strong>Email:</strong>
+                            <%= user.email %>
+                        </p>
+                        <p><strong>Age:</strong>
+                            <%= user.age %>
+                        </p>
+                    </div>
+                </div>
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <div class="score-card text-center">
+                            <img src="css/image/ai-voice.jpeg" alt="Your Image Description"
+                                class="card-img-top mx-auto mt-3"
+                                style="max-width: 25%; height: auto; padding-bottom: 3%;">
+                            <h5>คะแนนผลการประเมินด้วยเสียง</h5>
+                            <p><strong>คะแนนล่าสุด :</strong>
+                                <%= user.totalScoreVoice !=null ? user.totalScoreVoice : '-' %>
+                            </p>
+                            <% if (user.totalScoreVoice==null) { %>
+                                <p style="color: grey;">คุณยังไม่เคยทำแบบสอบถาม</p>
+                                <% } else if (user.totalScoreVoice <=6) { %>
+                                    <p style="color: green;">คุณไม่มีภาวะซึมเศร้า</p>
+                                    <% } else if (user.totalScoreVoice <=12) { %>
+                                        <p style="color: rgb(212, 212, 98);">คุณมีภาวะซึมเศร้าในระดับเบา</p>
+                                        <% } else if (user.totalScoreVoice <=18) { %>
+                                            <p style="color: orange;">คุณมีภาวะซึมเศร้าในระดับปานกลาง</p>
+                                            <% } else { %>
+                                                <p style="color: red;">คุณมีภาวะซึมเศร้าในระดับรุนแรง</p>
+                                                <% } %>
+                                                    <button class="btn btn-info mt-3"
+                                                        onclick="showVoiceAdvice()">แสดงคำแนะนำ</button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="score-card text-center">
+                            <img src="css/image/phq9-Q.jpeg" alt="Your Image Description"
+                                class="card-img-top mx-auto mt-3"
+                                style="max-width: 25%; height: auto; padding-bottom: 3%;">
+                            <h5>คะแนนผลการประเมินด้วยตัวเลือก</h5>
+                            <p><strong>คะแนนล่าสุด :</strong>
+                                <%= user.totalScoreChoice !=null ? user.totalScoreChoice : '-' %>
+                            </p>
+                            <% if (user.totalScoreChoice==null) { %>
+                                <p style="color: grey;">คุณยังไม่เคยทำแบบสอบถาม</p>
+                                <% } else if (user.totalScoreChoice <=6) { %>
+                                    <p style="color: green;">คุณไม่มีภาวะซึมเศร้า</p>
+                                    <% } else if (user.totalScoreChoice <=12) { %>
+                                        <p style="color: rgb(212, 212, 98);">คุณมีภาวะซึมเศร้าในระดับเบา</p>
+                                        <% } else if (user.totalScoreChoice <=18) { %>
+                                            <p style="color: orange;">คุณมีภาวะซึมเศร้าในระดับปานกลาง</p>
+                                            <% } else { %>
+                                                <p style="color: red;">คุณมีภาวะซึมเศร้าในระดับรุนแรง</p>
+                                                <% } %>
+                                                    <button class="btn btn-info mt-3"
+                                                        onclick="showChoiceAdvice()">แสดงคำแนะนำ</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal for Voice Advice -->
+                <div class="modal fade" id="voiceAdviceModal" tabindex="-1" aria-labelledby="voiceAdviceModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="voiceAdviceModalLabel">คำแนะนำผลการประเมินด้วยเสียง</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" id="voiceAdviceContent">
+                                <!-- Advice will be populated here by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal for Choice Advice -->
+                <div class="modal fade" id="choiceAdviceModal" tabindex="-1" aria-labelledby="choiceAdviceModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="choiceAdviceModalLabel">คำแนะนำผลการประเมินด้วยตัวเลือก</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body" id="choiceAdviceContent">
+                                <!-- Advice will be populated here by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    
+    <script>
+        const scoreDataElement = document.getElementById('scoreData');
+        const totalScoreVoice = scoreDataElement.getAttribute('data-total-score-voice') !== 'null' ? parseInt(scoreDataElement.getAttribute('data-total-score-voice')) : null;
+        const totalScoreChoice = scoreDataElement.getAttribute('data-total-score-choice') !== 'null' ? parseInt(scoreDataElement.getAttribute('data-total-score-choice')) : null;
+
+        function showVoiceAdvice() {
+            let advice = "";
+            if (totalScoreVoice === null) {
+                advice = "คุณยังไม่เคยทำแบบสอบถาม";
+            } else if (totalScoreVoice <= 6) {
+                advice = "<strong>ปรับทัศนคติในทางบวก:</strong> ครอบครัวหรือคนรอบข้างสามารถช่วยคุณให้เห็นคุณค่าในตนเองและมีมุมมองที่เป็นบวกต่อชีวิตได้\n" +
+                    "<strong>ฝึกทักษะการจัดการอารมณ์:</strong> สนับสนุนให้คุณฝึกทักษะในการจัดการอารมณ์และการเผชิญหน้ากับปัญหาต่างๆ อย่างมีสติ\n" +
+                    "<strong>สนับสนุนการสื่อสารที่ดี:</strong> ส่งเสริมการสื่อสารที่เปิดเผยและเข้าใจ เพื่อสร้างความสัมพันธ์ที่ดีและลดความรู้สึกโดดเดี่ยว\n" +
+                    "<strong>เข้าร่วมกิจกรรมที่สร้างความมั่นใจ:</strong> สนับสนุนให้คุณมีส่วนร่วมในกิจกรรมที่ช่วยเสริมสร้างความมั่นใจและความรู้สึกดีในตนเอง\n" +
+                    "<strong>จัดการเวลาพักผ่อนอย่างเหมาะสม:</strong> ครอบครัวหรือคนรอบข้างสามารถช่วยคุณสร้างตารางเวลาที่สมดุลระหว่างการทำงานและการพักผ่อน เพื่อป้องกันความเครียดสะสม";
+            } else if (totalScoreVoice <= 12) {
+                advice = "<strong>ปรับทัศนคติ:</strong>  สามารถช่วยคุณให้เห็นมุมมองที่เป็นบวกและให้กำลังใจในการเผชิญหน้ากับปัญหา\n" +
+                    "<strong>สนับสนุนการกินยาให้ครบ:</strong> ตรวจสอบให้คุณกินยาตามที่แพทย์สั่งอย่างครบถ้วนและสม่ำเสมอ\n" +
+                    "<strong>ส่งเสริมการนอนเพียงพอ:</strong> คุณสามารถสร้างตารางการนอนที่เป็นประจำและมีคุณภาพ เพื่อให้ร่างกายและจิตใจได้พักผ่อนอย่างเต็มที่\n" +
+                    "<strong>ออกกำลังกายสม่ำเสมอ:</strong> สนับสนุนการออกกำลังกายที่เหมาะสมและสม่ำเสมอ เพื่อเสริมสร้างสุขภาพจิตและร่างกาย\n" +
+                    "<strong>ฝึกสมองและรู้เท่าทันอารมณ์:</strong> ฝึกสมองและรู้เท่าทันอารมณ์ของตัวเอง เพื่อให้สามารถรับมือกับความเครียดได้อย่างมีประสิทธิภาพ";
+            }
+            else if (totalScoreVoice <= 18) {
+                advice = "<strong>ส่งเสริมการออกกำลังกายเบาๆ:</strong> การเดินเล่นหรือออกกำลังกายเบาๆ ช่วยให้คุณกระตุ้นการหลั่งสารเอ็นดอร์ฟินที่ช่วยลดความเครียด\n" +
+                    "<strong>แนะนำกิจกรรมที่ชื่นชอบ:</strong> คุณสามารถทำกิจกรรมที่ชื่นชอบ เช่น การวาดภาพ การฟังเพลง หรือการอ่านหนังสือ เพื่อช่วยให้จิตใจสงบลง\n" +
+                    "<strong>สร้างตารางเวลาประจำวัน:</strong> การจัดตารางเวลาประจำวันให้มีการทำกิจกรรมที่มีความหมายและช่วยสร้างความรู้สึกประสบความสำเร็จแก่คุณได้\n" +
+                    "<strong>สนับสนุนการรับประทานอาหารที่ดีต่อสุขภาพ:</strong> อาหารที่มีประโยชน์ช่วยให้ร่างกายแข็งแรงและจิตใจดีขึ้น เช่น อาหารที่มีโอเมก้า-3 และวิตามินบี\n" +
+                    "<strong>สร้างบรรยากาศที่อบอุ่น:</strong> ปรับสภาพแวดล้อมให้มีความอบอุ่นและผ่อนคลาย เพื่อช่วยลดความเครียดและความวิตกกังวลของคุณ";
+            } else {
+                advice = "<strong>ติดต่อแพทย์ทันที:</strong> หากพบว่าตัวคุณมีความคิดฆ่าตัวตาย ควรพาผู้ป่วยไปพบจิตแพทย์หรือผู้เชี่ยวชาญทันที เพื่อประเมินอาการและเริ่มการรักษา\n" +
+                    "<strong>ไม่ปล่อยให้ผู้ป่วยอยู่คนเดียว:</strong> คุณควรอยู่ในสภาพแวดล้อมที่มีคนคอยดูแลและให้กำลังใจ ไม่ปล่อยให้อยู่คนเดียวเพื่อป้องกันเหตุการณ์ไม่คาดคิด\n" +
+                    "<strong>ให้การสนับสนุนอย่างต่อเนื่อง:</strong> การสนับสนุนทางอารมณ์จากครอบครัวและเพื่อนฝูงเป็นสิ่งสำคัญ ช่วยให้คุณรู้สึกว่ามีคนคอยอยู่เคียงข้าง\n" +
+                    "<strong>สร้างบรรยากาศที่ปลอดภัย:</strong> ปรับสภาพแวดล้อมให้คุณรู้สึกปลอดภัยและอบอุ่น หลีกเลี่ยงสิ่งที่อาจกระตุ้นให้เกิดความคิดฆ่าตัวตาย\n" +
+                    "<strong>ส่งเสริมการพูดคุย:</strong> เปิดโอกาสให้คุณได้พูดคุยเกี่ยวกับความรู้สึกและปัญหาที่เผชิญอยู่ ฟังอย่างตั้งใจและไม่ตัดสิน";
+            }
+            document.getElementById('voiceAdviceContent').innerHTML = advice.replace(/\n/g, '<br>');
+            const voiceAdviceModal = new bootstrap.Modal(document.getElementById('voiceAdviceModal'));
+            voiceAdviceModal.show();
+        }
+
+        function showChoiceAdvice() {
+            let advice = "";
+            if (totalScoreChoice === null) {
+                advice = "คุณยังไม่เคยทำแบบสอบถาม";
+            } else if (totalScoreChoice <= 6) {
+                advice = "<strong>ปรับทัศนคติในทางบวก:</strong> ครอบครัวหรือคนรอบข้างสามารถช่วยคุณให้เห็นคุณค่าในตนเองและมีมุมมองที่เป็นบวกต่อชีวิตได้\n" +
+                    "<strong>ฝึกทักษะการจัดการอารมณ์:</strong> สนับสนุนให้คุณฝึกทักษะในการจัดการอารมณ์และการเผชิญหน้ากับปัญหาต่างๆ อย่างมีสติ\n" +
+                    "<strong>สนับสนุนการสื่อสารที่ดี:</strong> ส่งเสริมการสื่อสารที่เปิดเผยและเข้าใจ เพื่อสร้างความสัมพันธ์ที่ดีและลดความรู้สึกโดดเดี่ยว\n" +
+                    "<strong>เข้าร่วมกิจกรรมที่สร้างความมั่นใจ:</strong> สนับสนุนให้คุณมีส่วนร่วมในกิจกรรมที่ช่วยเสริมสร้างความมั่นใจและความรู้สึกดีในตนเอง\n" +
+                    "<strong>จัดการเวลาพักผ่อนอย่างเหมาะสม:</strong> ครอบครัวหรือคนรอบข้างสามารถช่วยคุณสร้างตารางเวลาที่สมดุลระหว่างการทำงานและการพักผ่อน เพื่อป้องกันความเครียดสะสม";
+            } else if (totalScoreChoice <= 12) {
+                advice = "<strong>ปรับทัศนคติ:</strong>  สามารถช่วยคุณให้เห็นมุมมองที่เป็นบวกและให้กำลังใจในการเผชิญหน้ากับปัญหา\n" +
+                    "<strong>สนับสนุนการกินยาให้ครบ:</strong> ตรวจสอบให้คุณกินยาตามที่แพทย์สั่งอย่างครบถ้วนและสม่ำเสมอ\n" +
+                    "<strong>ส่งเสริมการนอนเพียงพอ:</strong> คุณสามารถสร้างตารางการนอนที่เป็นประจำและมีคุณภาพ เพื่อให้ร่างกายและจิตใจได้พักผ่อนอย่างเต็มที่\n" +
+                    "<strong>ออกกำลังกายสม่ำเสมอ:</strong> สนับสนุนการออกกำลังกายที่เหมาะสมและสม่ำเสมอ เพื่อเสริมสร้างสุขภาพจิตและร่างกาย\n" +
+                    "<strong>ฝึกสมองและรู้เท่าทันอารมณ์:</strong> ฝึกสมองและรู้เท่าทันอารมณ์ของตัวเอง เพื่อให้สามารถรับมือกับความเครียดได้อย่างมีประสิทธิภาพ";
+            } else if (totalScoreChoice <= 18) {
+                advice = "<strong>ส่งเสริมการออกกำลังกายเบาๆ:</strong> การเดินเล่นหรือออกกำลังกายเบาๆ ช่วยให้คุณกระตุ้นการหลั่งสารเอ็นดอร์ฟินที่ช่วยลดความเครียด\n" +
+                    "<strong>แนะนำกิจกรรมที่ชื่นชอบ:</strong> คุณสามารถทำกิจกรรมที่ชื่นชอบ เช่น การวาดภาพ การฟังเพลง หรือการอ่านหนังสือ เพื่อช่วยให้จิตใจสงบลง\n" +
+                    "<strong>สร้างตารางเวลาประจำวัน:</strong> การจัดตารางเวลาประจำวันให้มีการทำกิจกรรมที่มีความหมายและช่วยสร้างความรู้สึกประสบความสำเร็จแก่คุณได้\n" +
+                    "<strong>สนับสนุนการรับประทานอาหารที่ดีต่อสุขภาพ:</strong> อาหารที่มีประโยชน์ช่วยให้ร่างกายแข็งแรงและจิตใจดีขึ้น เช่น อาหารที่มีโอเมก้า-3 และวิตามินบี\n" +
+                    "<strong>สร้างบรรยากาศที่อบอุ่น:</strong> ปรับสภาพแวดล้อมให้มีความอบอุ่นและผ่อนคลาย เพื่อช่วยลดความเครียดและความวิตกกังวลของคุณ";
+            } else {
+                advice = "<strong>ติดต่อแพทย์ทันที:</strong> หากพบว่าตัวคุณมีความคิดฆ่าตัวตาย ควรพาผู้ป่วยไปพบจิตแพทย์หรือผู้เชี่ยวชาญทันที เพื่อประเมินอาการและเริ่มการรักษา\n" +
+                    "<strong>ไม่ปล่อยให้ผู้ป่วยอยู่คนเดียว:</strong> คุณควรอยู่ในสภาพแวดล้อมที่มีคนคอยดูแลและให้กำลังใจ ไม่ปล่อยให้อยู่คนเดียวเพื่อป้องกันเหตุการณ์ไม่คาดคิด\n" +
+                    "<strong>ให้การสนับสนุนอย่างต่อเนื่อง:</strong> การสนับสนุนทางอารมณ์จากครอบครัวและเพื่อนฝูงเป็นสิ่งสำคัญ ช่วยให้คุณรู้สึกว่ามีคนคอยอยู่เคียงข้าง\n" +
+                    "<strong>สร้างบรรยากาศที่ปลอดภัย:</strong> ปรับสภาพแวดล้อมให้คุณรู้สึกปลอดภัยและอบอุ่น หลีกเลี่ยงสิ่งที่อาจกระตุ้นให้เกิดความคิดฆ่าตัวตาย\n" +
+                    "<strong>ส่งเสริมการพูดคุย:</strong> เปิดโอกาสให้คุณได้พูดคุยเกี่ยวกับความรู้สึกและปัญหาที่เผชิญอยู่ ฟังอย่างตั้งใจและไม่ตัดสิน";
+            }
+            document.getElementById('choiceAdviceContent').innerHTML = advice.replace(/\n/g, '<br>');
+            const choiceAdviceModal = new bootstrap.Modal(document.getElementById('choiceAdviceModal'));
+            choiceAdviceModal.show();
+        }
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

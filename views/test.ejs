@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Record Audio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&family=Sriracha&display=swap"
+        rel="stylesheet">
+    <link href="/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
+    <link href="css/styles.css" rel="stylesheet" />
+</head>
+
+<body>
+    <!-- Navigation-->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+        <div class="container px-4">
+            <a class="navbar-brand" href="#page-top">
+                <img src="css/image/Phuean_Jai_removebg-preview.png" alt="Phuean Jai Logo"> Phuean Jai
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto">
+
+                </ul>
+                <div class="col-4 d-flex justify-content-end align-items-center">
+                    <% if (loggedIn) { %>
+                        <a class="btn btn-sm btn-info mx-3" href="/home">หน้าหลัก</a>
+                        <a class="btn btn-sm btn-danger" href="/logout">ออกจากระบบ</a>
+                        <% } %>
+                            <% if (!loggedIn) { %>
+                                <a class="btn btn-sm btn-outline-secondary mx-3" href="/">เข้าสู่ระบบ</a>
+                                <a class="btn btn-sm btn-success" href="/register">ลงทะเบียน</a>
+                                <% } %>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header-->
+    <header style="padding-bottom: 0% !important;">
+        <div class="container px-4 text-center">
+            <h2 class="fw-bolder" style="font-size: 3.5rem; margin-top: 0;">แบบทดสอบภาวะซึมเศร้าด้วยเสียง</h2>
+        </div>
+    </header>
+
+    <div class="container mt-5">
+        <div id="questionsContainer">
+            <!-- Question Template -->
+            <template id="questionTemplate">
+                <div class="card question-card ">
+                    <div class="card-body">
+                        <h2 class="mb-4 card-title"></h2>
+                        <div class="mb-3">
+                            <button class="start btn btn-primary btn-custom">กดเพื่อบันทึกเสียง</button>
+                            <button class="stop btn btn-danger btn-custom">กดเพื่อหยุดบันทึกเสียง</button>
+                        </div>
+                        <audio class="audio mb-3" controls></audio>
+                        <form class="uploadForm" enctype="multipart/form-data">
+                            <input type="file" class="audioFile" name="audioFile" style="display: none;">
+                            <input type="hidden" class="tableName" name="tableName">
+                            <input type="hidden" class="scoreField" name="scoreField">
+                            <button type="submit" class="btn btn-success btn-custom">วิเคราะห์เสียง</button>
+                        </form>
+                        <div class="progressContainer">
+                            <div class="progress">
+                                <div class="progressBar progress-bar" role="progressbar" style="width: 0%;"
+                                    aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                            </div>
+                        </div>
+                        <div class="errorMessage text-danger"></div>
+                        <div class="successMessage text-success"></div>
+                    </div>
+                </div>
+            </template>
+        </div>
+    </div>
+
+
+    <!-- Question Instances -->
+    <div id="questions"></div>
+    </div>
+    <div class="container px-4 text-center" style="padding-bottom: 2%;">
+        <a class="btn btn-custom-c" id="enterButton">
+            <i class="fas fa-paper-plane"></i> ส่งคำตอบ
+        </a>
+    </div>
+
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">ยืนยันการส่งคำตอบ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" style="text-align: center;">
+                    คุณแน่ใจหรือไม่ว่าต้องการส่งคำตอบนี้ สามารถดูผลการประเมินย้อนหลังได้ที่หน้า ข้อมูลส่วนตัว
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary" id="confirmSubmit">ยืนยัน</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Result Score Modals -->
+    <div class="modal-result modal fade" id="result_score_0" tabindex="-1" aria-labelledby="resultScore0Label"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resultScore0Label">ผลการประเมิน: คะแนน 0-6</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>ผลการประเมิน: คุณไม่มีภาวะซึมเศร้า</p>
+                    <img class="small-img d-block mx-auto" src="css/image/score_0.png" alt="..." />
+                    <div class="mitr-extralight">
+                        <p>คำอธิบาย: คุณเข้าข่ายระดับที่ 1 ไม่พบอาการ ซึ่งแสดงว่าคุณไม่มีภาวะซึมเศร้าอย่างชัดเจน
+                            แม้ว่าคุณอาจจะเผชิญกับความเครียดหรือความเศร้าในบางครั้ง
+                            แต่คุณยังสามารถแก้ไขปัญหาและดำเนินชีวิตประจำวันได้ตามปกติ
+                            ความสามารถในการรับมือกับความท้าทายต่างๆ</p>
+                        <p>คำแนะนำ:</p>
+                        <p>ปรับทัศนคติในทางบวก:
+                            ครอบครัวหรือคนรอบข้างสามารถช่วยคุณให้เห็นคุณค่าในตนเองและมีมุมมองที่เป็นบวกต่อชีวิตได้</p>
+                        <p>ฝึกทักษะการจัดการอารมณ์: สนับสนุนให้คุณฝึกทักษะในการจัดการอารมณ์และการเผชิญหน้ากับปัญหาต่างๆ
+                            อย่างมีสติ</p>
+                        <p>สนับสนุนการสื่อสารที่ดี: ส่งเสริมการสื่อสารที่เปิดเผยและเข้าใจ
+                            เพื่อสร้างความสัมพันธ์ที่ดีและลดความรู้สึกโดดเดี่ยว</p>
+                        <p>เข้าร่วมกิจกรรมที่สร้างความมั่นใจ:
+                            สนับสนุนให้คุณมีส่วนร่วมในกิจกรรมที่ช่วยเสริมสร้างความมั่นใจและความรู้สึกดีในตนเอง</p>
+                        <p>จัดการเวลาพักผ่อนอย่างเหมาะสม:
+                            ครอบครัวหรือคนรอบข้างสามารถช่วยคุณสร้างตารางเวลาที่สมดุลระหว่างการทำงานและการพักผ่อน
+                            เพื่อป้องกันความเครียดสะสม</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-result modal fade" id="result_score_1" tabindex="-1" aria-labelledby="resultScore1Label"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resultScore1Label">ผลการประเมิน: คะแนน 7-12</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>ผลการประเมิน: คุณมีภาวะซึมเศร้าในระดับเบา</p>
+                    <img class="small-img d-block mx-auto" src="css/image/score_1.png" alt="..." />
+                    <div class="mitr-extralight">
+                        <p>คุณเข้าข่ายระดับที่ 2 เป็นผู้ป่วยที่มีอาการซึมเศร้าเล็กน้อยอาจมีความเศร้าในบางครั้ง
+                            แต่ยังสามารถดำเนินชีวิตได้ตามปกติ
+                            การปรับทัศนคติและการฝึกทักษะในการจัดการอารมณ์เป็นสิ่งสำคัญสำหรับผู้ป่วยในระดับนี้
+                            เพื่อป้องกันไม่ให้อาการรุนแรงขึ้น</p>
+                        <p>คำแนะนำ:</p>
+                        <p>ปรับทัศนคติ: สามารถช่วยคุณให้เห็นมุมมองที่เป็นบวกและให้กำลังใจในการเผชิญหน้ากับปัญหา</p>
+                        <p>สนับสนุนการกินยาให้ครบ: ตรวจสอบให้คุณกินยาตามที่แพทย์สั่งอย่างครบถ้วนและสม่ำเสมอ</p>
+                        <p>ส่งเสริมการนอนเพียงพอ: คุณสามารถสร้างตารางการนอนที่เป็นประจำและมีคุณภาพ
+                            เพื่อให้ร่างกายและจิตใจได้พักผ่อนอย่างเต็มที่</p>
+                        <p>ออกกำลังกายสม่ำเสมอ: สนับสนุนการออกกำลังกายที่เหมาะสมและสม่ำเสมอ
+                            เพื่อเสริมสร้างสุขภาพจิตและร่างกาย</p>
+                        <p>ฝึกสมองและรู้เท่าทันอารมณ์: ฝึกสมองและรู้เท่าทันอารมณ์ของตัวเอง
+                            เพื่อให้สามารถรับมือกับความเครียดได้อย่างมีประสิทธิภาพ</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="modal-result modal fade" id="result_score_2" tabindex="-1" aria-labelledby="resultScore2Label"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resultScore2Label">ผลการประเมิน: คะแนน 13-18</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>ผลการประเมิน: คุณมีภาวะซึมเศร้าในระดับปานกลาง</p>
+                    <img class="small-img d-block mx-auto" src="css/image/score_2.png" alt="..." />
+                    <div class="mitr-extralight">
+                        <p>คำอธิบาย: คุณเข้าข่ายระดับที่ 3
+                            ที่มีอาการซึมเศร้าปานกลางอาจรู้สึกเศร้าซึมแต่ยังสามารถดำเนินชีวิตได้บ้าง
+                            อาการอาจรุนแรงขึ้นในบางครั้งและอาจส่งผลต่อการทำงานหรือการใช้ชีวิตประจำวัน
+                            ผู้ป่วยในระดับนี้ยังคงต้องการการดูแลอย่างใกล้ชิดเพื่อป้องกันไม่ให้อาการรุนแรงขึ้น</p>
+                        <p>คำแนะนำ:</p>
+                        <p>ส่งเสริมการออกกำลังกายเบาๆ: การเดินเล่นหรือออกกำลังกายเบาๆ
+                            ช่วยให้คุณกระตุ้นการหลั่งสารเอ็นดอร์ฟินที่ช่วยลดความเครียด</p>
+                        <p>แนะนำกิจกรรมที่ชื่นชอบ: คุณสามารถทำกิจกรรมที่ชื่นชอบ เช่น การวาดภาพ การฟังเพลง
+                            หรือการอ่านหนังสือ เพื่อช่วยให้จิตใจสงบลง</p>
+                        <p>สร้างตารางเวลาประจำวัน:
+                            การจัดตารางเวลาประจำวันให้มีการทำกิจกรรมที่มีความหมายและช่วยสร้างความรู้สึกประสบความสำเร็จแก่คุณได้
+                        </p>
+                        <p>สนับสนุนการรับประทานอาหารที่ดีต่อสุขภาพ:
+                            อาหารที่มีประโยชน์ช่วยให้ร่างกายแข็งแรงและจิตใจดีขึ้น เช่น อาหารที่มีโอเมก้า-3 และวิตามินบี
+                        </p>
+                        <p>สร้างบรรยากาศที่อบอุ่น: ปรับสภาพแวดล้อมให้มีความอบอุ่นและผ่อนคลาย
+                            เพื่อช่วยลดความเครียดและความวิตกกังวลของคุณ</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="modal-result modal fade" id="result_score_3" tabindex="-1" aria-labelledby="resultScore3Label"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resultScore3Label">ผลการประเมิน: คะแนนมากกว่า 19</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>ผลการประเมิน: คุณมีภาวะซึมเศร้าในระดับรุนแรง</p>
+                    <img class="small-img d-block mx-auto" src="css/image/score_3.png" alt="..." />
+                    <div class="mitr-extralight">
+                        <p>คำอธิบาย: คุณเข้าข่ายระดับที่ 4
+                            ผู้ป่วยที่มีอาการซึมเศร้ามากจะรู้สึกทรมานจากความเศร้าซึมอย่างต่อเนื่อง
+                            อาจรู้สึกหมดแรง ไม่อยากทำกิจกรรมใดๆ และรู้สึกว่าอนาคตไม่มีความหวัง
+                            ควรให้ความสนใจว่าอาการของผู้ป่วยในระดับนี้มีความรุนแรงและมีผลกระทบต่อการดำเนินชีวิตประจำวัน
+                        </p>
+                        <p>คำแนะนำ:</p>
+                        <p>ติดต่อแพทย์ทันที: หากพบว่าตัวคุณมีความคิดฆ่าตัวตาย
+                            ควรพาผู้ป่วยไปพบจิตแพทย์หรือผู้เชี่ยวชาญทันที เพื่อประเมินอาการและเริ่มการรักษา</p>
+                        <p>ไม่ปล่อยให้ผู้ป่วยอยู่คนเดียว: คุณควรอยู่ในสภาพแวดล้อมที่มีคนคอยดูแลและให้กำลังใจ
+                            ไม่ปล่อยให้อยู่คนเดียวเพื่อป้องกันเหตุการณ์ไม่คาดคิด</p>
+                        <p>ให้การสนับสนุนอย่างต่อเนื่อง: การสนับสนุนทางอารมณ์จากครอบครัวและเพื่อนฝูงเป็นสิ่งสำคัญ
+                            ช่วยให้คุณรู้สึกว่ามีคนคอยอยู่เคียงข้าง</p>
+                        <p>สร้างบรรยากาศที่ปลอดภัย: ปรับสภาพแวดล้อมให้คุณรู้สึกปลอดภัยและอบอุ่น
+                            หลีกเลี่ยงสิ่งที่อาจกระตุ้นให้เกิดความคิดฆ่าตัวตาย</p>
+                        <p>ส่งเสริมการพูดคุย: เปิดโอกาสให้คุณได้พูดคุยเกี่ยวกับความรู้สึกและปัญหาที่เผชิญอยู่
+                            ฟังอย่างตั้งใจและไม่ตัดสิน</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errorModalLabel">เกิดข้อผิดพลาดในการทำแบบประเมิน</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Error content for the modal -->
+                    <p>คุณยังตอบแบบสอบถามไม่ครบทุกข้อยังไม่สามารถทำการสรุปผลได้ ได้โปรดตรวจสอบการทำแบบสอบถามใหม่</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.WebRTC-Experiment.com/RecordRTC.js"></script>
+    <script>
+        const questions = [
+            "1. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านรู้สึกเบื่อหรือไม่สนใจทำกิจกรรมต่าง ๆ หรือไม่?",
+            "2. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านรู้สึกไม่สบายใจ ซึมเศร้า หรือหมดหวังหรือไม่?",
+            "3. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านมีปัญหาในการหลับ หรือหลับมากเกินไปหรือไม่?",
+            "4. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านรู้สึกเหนื่อยหรือไม่มีพลังงานหรือไม่?",
+            "5. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านรู้สึกเบื่ออาหาร หรือกินมากเกินไปหรือไม่?",
+            "6. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านรู้สึกไม่ดีต่อตัวเอง หรือรู้สึกล้มเหลวหรือไม่?",
+            "7. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านมีปัญหาในการมีสมาธิ หรือมีปัญหาในการตัดสินใจหรือไม่?",
+            "8. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านมีการเคลื่อนไหวหรือพูดช้าๆ หรือเร็วๆ หรือไม่?",
+            "9. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านมีความคิดที่อยากจะตาย หรือทำร้ายตัวเองหรือไม่?"
+        ];
+
+        const questionsContainer = document.getElementById('questions');
+        const questionTemplate = document.getElementById('questionTemplate').content;
+
+
+        questions.forEach((question, index) => {
+            const questionClone = document.importNode(questionTemplate, true);
+            questionClone.querySelector('h2').textContent = question;
+            questionClone.querySelector('.start').setAttribute('data-index', index);
+            questionClone.querySelector('.stop').setAttribute('data-index', index);
+            questionClone.querySelector('.uploadForm').setAttribute('data-index', index);
+            questionClone.querySelector('.tableName').value = `text_${index + 1}`;
+            questionClone.querySelector('.scoreField').value = `score_${index + 1}`;
+            questionsContainer.appendChild(questionClone);
+        });
+
+        document.querySelectorAll('.start').forEach(button => {
+            button.addEventListener('click', async function () {
+                const index = this.getAttribute('data-index');
+                let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                window['recorder' + index] = new RecordRTC(stream, {
+                    type: 'audio',
+                    mimeType: 'audio/wav',
+                    recorderType: StereoAudioRecorder,
+                    desiredSampRate: 16000
+                });
+                window['recorder' + index].startRecording();
+            });
+        });
+
+        document.querySelectorAll('.stop').forEach(button => {
+            button.addEventListener('click', function () {
+                const index = this.getAttribute('data-index');
+                window['recorder' + index].stopRecording(function () {
+                    let blob = window['recorder' + index].getBlob();
+                    const audio = document.querySelectorAll('.audio')[index];
+                    audio.src = URL.createObjectURL(blob);
+                    let file = new File([blob], 'audio.wav', { type: 'audio/wav' });
+                    let dt = new DataTransfer();
+                    dt.items.add(file);
+                    document.querySelectorAll('.audioFile')[index].files = dt.files;
+                });
+            });
+        });
+
+        document.querySelectorAll('.uploadForm').forEach(form => {
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                const index = this.getAttribute('data-index');
+                let formData = new FormData(this);
+                let progressBar = document.querySelectorAll('.progressBar')[index];
+                let progressContainer = document.querySelectorAll('.progressContainer')[index];
+                let errorMessage = document.querySelectorAll('.errorMessage')[index];
+                let successMessage = document.querySelectorAll('.successMessage')[index];
+
+                // Reset messages
+                errorMessage.innerHTML = '';
+                successMessage.innerHTML = '';
+
+                // Show the progress bar
+                progressContainer.style.display = 'block';
+
+                // Create an XMLHttpRequest to handle the upload
+                let xhr = new XMLHttpRequest();
+                xhr.open('POST', '/upload', true);
+
+                // Update the progress bar during the upload
+                xhr.upload.onprogress = function (event) {
+                    if (event.lengthComputable) {
+                        let percentComplete = (event.loaded / event.total) * 50; // Upload progress is 50% of total
+                        updateProgressBar(progressBar, percentComplete);
+                    }
+                };
+
+                // Handle the response from the server
+                xhr.onload = function () {
+                    if (xhr.status === 200) {
+                        try {
+                            let response = JSON.parse(xhr.responseText);
+                            completeProgressBar(progressBar);
+                            showSuccessMessage(successMessage, "การแปลงเสียงเสร็จสิ้น: " + JSON.stringify(response));
+                        } catch (e) {
+                            console.error('Invalid JSON response', e);
+                            showErrorMessage(errorMessage, 'ไม่พบไฟล์เสียง กรุณาอัดเสียงใหม่อีกครั้ง');
+                        }
+                    } else {
+                        try {
+                            let error = JSON.parse(xhr.responseText);
+                            console.error(error);
+                            showErrorMessage(errorMessage, error.error || 'ไม่พบไฟล์เสียง กรุณาอัดเสียงใหม่อีกครั้ง');
+                        } catch (e) {
+                            console.error('Invalid JSON response', e);
+                            showErrorMessage(errorMessage, 'การส่งข้อมูลผิดพลาด กรุณาส่งข้อมูลใหม่อีกครั้ง');
+                        }
+                    }
+                };
+
+                // Handle errors
+                xhr.onerror = function () {
+                    console.error('Upload failed');
+                    showErrorMessage(errorMessage, 'An error occurred while uploading the audio file');
+                };
+
+                // Send the form data
+                xhr.send(formData);
+            });
+        });
+
+        function updateProgressBar(progressBar, value) {
+            progressBar.style.width = value + '%';
+            progressBar.setAttribute('aria-valuenow', value);
+            progressBar.innerHTML = Math.round(value) + '%';
+        }
+
+        function completeProgressBar(progressBar) {
+            let value = 50;
+            let interval = setInterval(() => {
+                value += 5;
+                if (value > 100) {
+                    value = 100;
+                    clearInterval(interval);
+                }
+                updateProgressBar(progressBar, value);
+            }, 100);
+        }
+
+        function showErrorMessage(errorMessage, message) {
+            errorMessage.innerHTML = message;
+        }
+
+        function showSuccessMessage(successMessage, message) {
+            successMessage.innerHTML = message;
+        }
+        document.getElementById('enterButton').addEventListener('click', function () {
+            const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+            confirmModal.show();
+        });
+
+        document.getElementById('confirmSubmit').addEventListener('click', async function () {
+            try {
+                const response = await fetch('/check-data');
+                const result = await response.json();
+                if (result.complete) {
+                    let modalId = '';
+                    const totalScore = result.totalScore;
+                    if (totalScore >= 0 && totalScore <= 6) {
+                        modalId = 'result_score_0';
+                    } else if (totalScore >= 7 && totalScore <= 12) {
+                        modalId = 'result_score_1';
+                    } else if (totalScore >= 13 && totalScore <= 18) {
+                        modalId = 'result_score_2';
+                    } else if (totalScore >= 19) {
+                        modalId = 'result_score_3';
+                    }
+
+                    const resultModalElement = document.getElementById(modalId);
+                    const resultModalTitle = resultModalElement.querySelector('.modal-title');
+                    const resultModalBody = resultModalElement.querySelector('.modal-body');
+
+                    // Clear existing content
+                    const existingScoreElement = resultModalBody.querySelector('.total-score');
+                    if (existingScoreElement) {
+                        existingScoreElement.remove();
+                    }
+
+                    resultModalTitle.textContent = `ผลการประเมิน: คะแนน ${totalScore}`;
+                    resultModalBody.insertAdjacentHTML('afterbegin', `<p class="total-score">คะแนนของคุณคือ: ${totalScore}</p>`);
+
+                    const resultModal = new bootstrap.Modal(resultModalElement);
+                    resultModal.show();
+
+                    // ส่งข้อมูลไปยัง API
+                    const totalScoreVoice = totalScore;
+
+                    fetch('/updateVoiceScore', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ totalScoreVoice })
+                    })
+                        .then(response => response.json())
+                        .then(data => console.log('Success:', data))
+                        .catch(error => console.error('Error:', error));
+                } else {
+                    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+                    errorModal.show();
+                }
+            } catch (error) {
+                console.error('Error checking data:', error);
+            }
+        });
+
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

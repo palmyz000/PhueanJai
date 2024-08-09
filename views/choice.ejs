@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แบบทดสอบภาวะซึมเศร้า PHQ-9</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/styles.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&family=Sriracha&display=swap"
+        rel="stylesheet">
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <style>
+        .question-card {
+            margin-bottom: 20px;
+        }
+
+        .btn-custom {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #e57373;
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            font-weight: 500;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-custom img {
+            margin-right: 10px;
+        }
+
+        .bg-gradient {
+            background: linear-gradient(to right, #27ae60, #2980b9);
+        }
+
+        .normal-img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .slider-value {
+            margin-left: 10px;
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            flex: 1;
+        }
+
+        .total-score-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            font-size: 1.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation-->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+        <div class="container px-4">
+            <a class="navbar-brand" href="#page-top">
+                <img src="css/image/Phuean_Jai_removebg-preview.png" alt="Phuean Jai Logo"> Phuean Jai
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ms-auto">
+
+                </ul>
+                <div class="col-4 d-flex justify-content-end align-items-center">
+                    <% if (loggedIn) { %>
+                        <a class="btn btn-sm btn-info mx-3" href="/home">หน้าหลัก</a>
+                        <a class="btn btn-sm btn-danger" href="/logout">ออกจากระบบ</a>
+                        <% } %>
+                            <% if (!loggedIn) { %>
+                                <a class="btn btn-sm btn-outline-secondary mx-3" href="/">เข้าสู่ระบบ</a>
+                                <a class="btn btn-sm btn-success" href="/register">ลงทะเบียน</a>
+                                <% } %>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <header style="padding-bottom: 0% !important;">
+        <div class="container px-4 text-center">
+            <h2 class="fw-bolder" style="font-size: 3.5rem; margin-top: 0;">แบบทดสอบภาวะซึมเศร้าด้วยตัวเลือกตอบคำถาม
+            </h2>
+        </div>
+    </header>
+
+    <!-- Content -->
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <p class="lead-n">โปรดใส่คะแนนให้ตรงกับคำตอบของท่าน </p>
+                <p class="lead-n">(เกณฑ์ให้คะแนน: ไม่เลย = 0, เป็นบางวันหรือไม่บ่อย = 1,
+                    บ่อยหรือเกือบทุกวัน = 2, เกือบทุกวัน = 3)</p>
+            </div>
+        </div>
+        <div id="questionsContainer">
+            <!-- Questions will be injected here by JavaScript -->
+        </div>
+        <div class="total-score-container">
+            คะแนนรวม: <span id="totalScore">0</span>
+        </div>
+        <div class="container px-4 text-center" style="padding-bottom: 2%;">
+            <a class="btn btn-secondary btn-custom" id="enterButton"> ส่งคำตอบ
+            </a>
+        </div>
+    </div>
+
+    <!-- Question Template -->
+    <template id="questionTemplate">
+        <div class="card question-card">
+            <div class="card-body">
+                <h2 class="mb-4 card-title"></h2>
+                <div class="slider-container">
+                    <input type="range" class="form-control-range" min="0" max="3" value="0"
+                        onchange="updateSliderValue(this)">
+                    <span class="slider-value">0</span>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- Confirmation Modal -->
+    <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalLabel">ยืนยันการส่งคำตอบ</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body " style="text-align: center;">
+                    คุณแน่ใจหรือไม่ว่าต้องการส่งคำตอบนี้ สามารถดูผลการประเมินย้อนหลังได้ที่หน้า ข้อมูลส่วนตัว
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ยกเลิก</button>
+                    <button type="button" class="btn btn-primary" id="confirmSubmit">ยืนยัน</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Result Score Modals -->
+    <div class="modal-result modal fade" id="result_score_0" tabindex="-1" aria-labelledby="resultScore0Label"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resultScore0Label">ผลการประเมิน: คะแนน 0-6</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>ผลการประเมิน: คุณไม่มีภาวะซึมเศร้า</p>
+                    <img class="small-img d-block mx-auto" src="css/image/score_0.png" alt="..." />
+                    <div class="mitr-extralight">
+                        <p>คำอธิบาย: คุณเข้าข่ายระดับที่ 1 ไม่พบอาการ ซึ่งแสดงว่าคุณไม่มีภาวะซึมเศร้าอย่างชัดเจน
+                            แม้ว่าคุณอาจจะเผชิญกับความเครียดหรือความเศร้าในบางครั้ง
+                            แต่คุณยังสามารถแก้ไขปัญหาและดำเนินชีวิตประจำวันได้ตามปกติ
+                            ความสามารถในการรับมือกับความท้าทายต่างๆ</p>
+                        <p>คำแนะนำ:</p>
+                        <p>ปรับทัศนคติในทางบวก:
+                            ครอบครัวหรือคนรอบข้างสามารถช่วยคุณให้เห็นคุณค่าในตนเองและมีมุมมองที่เป็นบวกต่อชีวิตได้</p>
+                        <p>ฝึกทักษะการจัดการอารมณ์: สนับสนุนให้คุณฝึกทักษะในการจัดการอารมณ์และการเผชิญหน้ากับปัญหาต่างๆ
+                            อย่างมีสติ</p>
+                        <p>สนับสนุนการสื่อสารที่ดี: ส่งเสริมการสื่อสารที่เปิดเผยและเข้าใจ
+                            เพื่อสร้างความสัมพันธ์ที่ดีและลดความรู้สึกโดดเดี่ยว</p>
+                        <p>เข้าร่วมกิจกรรมที่สร้างความมั่นใจ:
+                            สนับสนุนให้คุณมีส่วนร่วมในกิจกรรมที่ช่วยเสริมสร้างความมั่นใจและความรู้สึกดีในตนเอง</p>
+                        <p>จัดการเวลาพักผ่อนอย่างเหมาะสม:
+                            ครอบครัวหรือคนรอบข้างสามารถช่วยคุณสร้างตารางเวลาที่สมดุลระหว่างการทำงานและการพักผ่อน
+                            เพื่อป้องกันความเครียดสะสม</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-result modal fade" id="result_score_1" tabindex="-1" aria-labelledby="resultScore1Label"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resultScore1Label">ผลการประเมิน: คะแนน 7-12</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>ผลการประเมิน: คุณมีภาวะซึมเศร้าในระดับเบา</p>
+                    <img class="small-img d-block mx-auto" src="css/image/score_1.png" alt="..." />
+                    <div class="mitr-extralight">
+                        <p>คุณเข้าข่ายระดับที่ 2 เป็นผู้ป่วยที่มีอาการซึมเศร้าเล็กน้อยอาจมีความเศร้าในบางครั้ง
+                            แต่ยังสามารถดำเนินชีวิตได้ตามปกติ
+                            การปรับทัศนคติและการฝึกทักษะในการจัดการอารมณ์เป็นสิ่งสำคัญสำหรับผู้ป่วยในระดับนี้
+                            เพื่อป้องกันไม่ให้อาการรุนแรงขึ้น</p>
+                        <p>คำแนะนำ:</p>
+                        <p>ปรับทัศนคติ: สามารถช่วยคุณให้เห็นมุมมองที่เป็นบวกและให้กำลังใจในการเผชิญหน้ากับปัญหา</p>
+                        <p>สนับสนุนการกินยาให้ครบ: ตรวจสอบให้คุณกินยาตามที่แพทย์สั่งอย่างครบถ้วนและสม่ำเสมอ</p>
+                        <p>ส่งเสริมการนอนเพียงพอ: คุณสามารถสร้างตารางการนอนที่เป็นประจำและมีคุณภาพ
+                            เพื่อให้ร่างกายและจิตใจได้พักผ่อนอย่างเต็มที่</p>
+                        <p>ออกกำลังกายสม่ำเสมอ: สนับสนุนการออกกำลังกายที่เหมาะสมและสม่ำเสมอ
+                            เพื่อเสริมสร้างสุขภาพจิตและร่างกาย</p>
+                        <p>ฝึกสมองและรู้เท่าทันอารมณ์: ฝึกสมองและรู้เท่าทันอารมณ์ของตัวเอง
+                            เพื่อให้สามารถรับมือกับความเครียดได้อย่างมีประสิทธิภาพ</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-result modal fade" id="result_score_2" tabindex="-1" aria-labelledby="resultScore2Label"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resultScore2Label">ผลการประเมิน: คะแนน 13-18</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>ผลการประเมิน: คุณมีภาวะซึมเศร้าในระดับปานกลาง</p>
+                    <img class="small-img d-block mx-auto" src="css/image/score_2.png" alt="..." />
+                    <div class="mitr-extralight">
+                        <p>คำอธิบาย: คุณเข้าข่ายระดับที่ 3
+                            ที่มีอาการซึมเศร้าปานกลางอาจรู้สึกเศร้าซึมแต่ยังสามารถดำเนินชีวิตได้บ้าง
+                            อาการอาจรุนแรงขึ้นในบางครั้งและอาจส่งผลต่อการทำงานหรือการใช้ชีวิตประจำวัน
+                            ผู้ป่วยในระดับนี้ยังคงต้องการการดูแลอย่างใกล้ชิดเพื่อป้องกันไม่ให้อาการรุนแรงขึ้น</p>
+                        <p>คำแนะนำ:</p>
+                        <p>ส่งเสริมการออกกำลังกายเบาๆ: การเดินเล่นหรือออกกำลังกายเบาๆ
+                            ช่วยให้คุณกระตุ้นการหลั่งสารเอ็นดอร์ฟินที่ช่วยลดความเครียด</p>
+                        <p>แนะนำกิจกรรมที่ชื่นชอบ: คุณสามารถทำกิจกรรมที่ชื่นชอบ เช่น การวาดภาพ การฟังเพลง
+                            หรือการอ่านหนังสือ เพื่อช่วยให้จิตใจสงบลง</p>
+                        <p>สร้างตารางเวลาประจำวัน:
+                            การจัดตารางเวลาประจำวันให้มีการทำกิจกรรมที่มีความหมายและช่วยสร้างความรู้สึกประสบความสำเร็จแก่คุณได้
+                        </p>
+                        <p>สนับสนุนการรับประทานอาหารที่ดีต่อสุขภาพ:
+                            อาหารที่มีประโยชน์ช่วยให้ร่างกายแข็งแรงและจิตใจดีขึ้น เช่น อาหารที่มีโอเมก้า-3 และวิตามินบี
+                        </p>
+                        <p>สร้างบรรยากาศที่อบอุ่น: ปรับสภาพแวดล้อมให้มีความอบอุ่นและผ่อนคลาย
+                            เพื่อช่วยลดความเครียดและความวิตกกังวลของคุณ</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-result modal fade" id="result_score_3" tabindex="-1" aria-labelledby="resultScore3Label"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resultScore3Label">ผลการประเมิน: คะแนนมากกว่า 19</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>ผลการประเมิน: คุณมีภาวะซึมเศร้าในระดับรุนแรง</p>
+                    <img class="small-img d-block mx-auto" src="css/image/score_3.png" alt="..." />
+                    <div class="mitr-extralight">
+                        <p>คำอธิบาย: คุณเข้าข่ายระดับที่ 4
+                            ผู้ป่วยที่มีอาการซึมเศร้ามากจะรู้สึกทรมานจากความเศร้าซึมอย่างต่อเนื่อง
+                            อาจรู้สึกหมดแรง ไม่อยากทำกิจกรรมใดๆ และรู้สึกว่าอนาคตไม่มีความหวัง
+                            ควรให้ความสนใจว่าอาการของผู้ป่วยในระดับนี้มีความรุนแรงและมีผลกระทบต่อการดำเนินชีวิตประจำวัน
+                        </p>
+                        <p>คำแนะนำ:</p>
+                        <p>ติดต่อแพทย์ทันที: หากพบว่าตัวคุณมีความคิดฆ่าตัวตาย
+                            ควรพาผู้ป่วยไปพบจิตแพทย์หรือผู้เชี่ยวชาญทันที เพื่อประเมินอาการและเริ่มการรักษา</p>
+                        <p>ไม่ปล่อยให้ผู้ป่วยอยู่คนเดียว: คุณควรอยู่ในสภาพแวดล้อมที่มีคนคอยดูแลและให้กำลังใจ
+                            ไม่ปล่อยให้อยู่คนเดียวเพื่อป้องกันเหตุการณ์ไม่คาดคิด</p>
+                        <p>ให้การสนับสนุนอย่างต่อเนื่อง: การสนับสนุนทางอารมณ์จากครอบครัวและเพื่อนฝูงเป็นสิ่งสำคัญ
+                            ช่วยให้คุณรู้สึกว่ามีคนคอยอยู่เคียงข้าง</p>
+                        <p>สร้างบรรยากาศที่ปลอดภัย: ปรับสภาพแวดล้อมให้คุณรู้สึกปลอดภัยและอบอุ่น
+                            หลีกเลี่ยงสิ่งที่อาจกระตุ้นให้เกิดความคิดฆ่าตัวตาย</p>
+                        <p>ส่งเสริมการพูดคุย: เปิดโอกาสให้คุณได้พูดคุยเกี่ยวกับความรู้สึกและปัญหาที่เผชิญอยู่
+                            ฟังอย่างตั้งใจและไม่ตัดสิน</p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const questions = [
+            "1. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านรู้สึกเบื่อหรือไม่สนใจทำกิจกรรมต่าง ๆ หรือไม่?",
+            "2. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านรู้สึกไม่สบายใจ ซึมเศร้า หรือหมดหวังหรือไม่?",
+            "3. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านมีปัญหาในการหลับ หรือหลับมากเกินไปหรือไม่?",
+            "4. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านรู้สึกเหนื่อยหรือไม่มีพลังงานหรือไม่?",
+            "5. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านรู้สึกเบื่ออาหาร หรือกินมากเกินไปหรือไม่?",
+            "6. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านรู้สึกไม่ดีต่อตัวเอง หรือรู้สึกล้มเหลวหรือไม่?",
+            "7. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านมีปัญหาในการมีสมาธิ หรือมีปัญหาในการตัดสินใจหรือไม่?",
+            "8. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านมีการเคลื่อนไหวหรือพูดช้าๆ หรือเร็วๆ หรือไม่?",
+            "9. ในช่วงสองสัปดาห์ที่ผ่านมา ท่านมีความคิดที่อยากจะตาย หรือทำร้ายตัวเองหรือไม่?"
+        ];
+
+        const questionsContainer = document.getElementById('questionsContainer');
+        const questionTemplate = document.getElementById('questionTemplate').content;
+
+        questions.forEach((question, index) => {
+            const questionClone = document.importNode(questionTemplate, true);
+            questionClone.querySelector('h2').textContent = question;
+            questionClone.querySelector('.form-control-range').setAttribute('name', `question_${index + 1}`);
+            questionsContainer.appendChild(questionClone);
+        });
+
+        function updateSliderValue(range) {
+            const value = range.value;
+            const sliderValue = range.nextElementSibling;
+            sliderValue.textContent = value;
+
+            // Update total score
+            const totalScoreElement = document.getElementById('totalScore');
+            const allRanges = document.querySelectorAll('.form-control-range');
+            let totalScore = 0;
+            allRanges.forEach(r => {
+                totalScore += parseInt(r.value);
+            });
+            totalScoreElement.textContent = totalScore;
+        }
+
+        document.getElementById('enterButton').addEventListener('click', function () {
+            const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+            confirmModal.show();
+        });
+
+        document.getElementById('confirmSubmit').addEventListener('click', function () {
+            const totalScore = parseInt(document.getElementById('totalScore').textContent);
+            let modalId = '';
+
+            if (totalScore >= 0 && totalScore <= 6) {
+                modalId = 'result_score_0';
+            } else if (totalScore >= 7 && totalScore <= 12) {
+                modalId = 'result_score_1';
+            } else if (totalScore >= 13 && totalScore <= 18) {
+                modalId = 'result_score_2';
+            } else if (totalScore >= 19) {
+                modalId = 'result_score_3';
+            }
+
+            const resultModalElement = document.getElementById(modalId);
+            const resultModalTitle = resultModalElement.querySelector('.modal-title');
+            const resultModalBody = resultModalElement.querySelector('.modal-body');
+
+            // Clear existing content
+            const existingScoreElement = resultModalBody.querySelector('.total-score');
+            if (existingScoreElement) {
+                existingScoreElement.remove();
+            }
+
+            resultModalTitle.textContent = `ผลการประเมิน: คะแนน ${totalScore}`;
+            resultModalBody.insertAdjacentHTML('afterbegin', `<p class="total-score">คะแนนของคุณคือ: ${totalScore}</p>`);
+
+            // Show result modal
+            const resultModal = new bootstrap.Modal(resultModalElement);
+            resultModal.show();
+
+            // Hide confirmation modal
+            const confirmModal = bootstrap.Modal.getInstance(document.getElementById('confirmModal'));
+            confirmModal.hide();
+
+            // ส่งข้อมูลไปยัง API
+            const userId = 'USER_ID_HERE';  // แทนที่ด้วยวิธีการรับ UserID จริงๆ ของระบบคุณ
+            const totalScoreChoice = totalScore;
+
+            fetch('http://localhost:3000/updateScore', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ userId, totalScoreChoice })
+            })
+                .then(response => response.json())
+                .then(data => console.log('Success:', data))
+                .catch(error => console.error('Error:', error));
+        });
+
+    </script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

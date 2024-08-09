@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="" />
+  <meta name="author" content="" />
+  <title>Phuean Jai Speech to text</title>
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+  <!-- Core theme CSS (includes Bootstrap)-->
+  <link href="css/styles.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Mitr:wght@200;300;400;500;600;700&family=Sriracha&display=swap"
+    rel="stylesheet">
+  <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+</head>
+
+<body id="page-top">
+  <!-- Navigation-->
+  <nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+    <div class="container px-4">
+      <a class="navbar-brand" href="#page-top">
+        <img src="css/image/Phuean_Jai_removebg-preview.png" alt="Phuean Jai Logo"> Phuean Jai
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
+        aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarResponsive">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="#about">นิยามของโรค</a></li>
+          <li class="nav-item"><a class="nav-link" href="#damage">ระดับความรุนแรง</a></li>
+          <li class="nav-item"><a class="nav-link" href="#Questionnaire">แบบประเมินภาวะซึมเศร้า</a></li>
+        </ul>
+        <div class="col-4 d-flex justify-content-end align-items-center">
+          <% if (loggedIn) { %>
+            <a class="btn btn-sm btn-info mx-3" href="/profile">ข้อมูลส่วนตัว</a>
+            <a class="btn btn-sm btn-danger" href="/logout">ออกจากระบบ</a>
+            <% } %>
+              <% if (!loggedIn) { %>
+                <a class="btn btn-sm btn-outline-secondary mx-3" href="/">เข้าสู่ระบบ</a>
+                <a class="btn btn-sm btn-success" href="/register">ลงทะเบียน</a>
+                <% } %>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Header-->
+  <header class="bg-dark text-white text-center"
+    style="background-image: url('css/image/home-wellcome.png'); background-size: cover; background-position: center; height: 100vh; display: flex; align-items: center; justify-content: center; ">
+    <div class="container px-4 text-center">
+      <h2 class="fw-bolder" style="font-size: 3.5rem; margin-top: 0; color: black;">เพื่อนใจ - ที่นี่ไม่มีคำว่า
+        "คนเดียว"</h2>
+      <h3 style="margin-bottom: 0;color: black;">เราเข้าใจว่าชีวิตบางครั้งอาจนำพาเราผ่านทางที่ทำให้รู้สึกไม่สบายใจ
+        และทางเราที่นี่ก็มุ่งมั่นที่จะเป็นเพื่อนใจที่คอยช่วยเสมอภาพให้คุณ และแบ่งปันความเข้าใจเกี่ยวกับสุขภาพจิต</h3>
+      <a class="btn btn-lg btn-warning mt-4" href="#about">ให้เราได้ดูแลคุณ</a>
+    </div>
+  </header>
+  <!-- About section-->
+  <section id="about">
+    <div class="container px-4">
+      <div class="row gx-4 justify-content-center">
+        <div class="col-lg-8">
+          <h2>โรคซึมเศร้าคืออะไร ?</h2>
+          <div class="image-container mb-4" style="text-align: center;">
+            <img class="normal-img" src="css/image/homepage-depression.jpg" alt="Depression">
+          </div>
+          <p class="lead">ภาวะซึมเศร้า
+            เป็นอาการทางจิตใจที่สามารถพบได้บ่อยและสามารถเกิดขึ้นได้กับทุกคน ลักษณะสำคัญคือ
+            อารมณ์เศร้า หดหู่ หรือสูญเสียความสุขและความสนใจในกิจกรรมต่างๆที่เคยชอบเป็นเวลานาน
+            โดยอารมณ์จะปลี่ยนแปลงไปจากปกติที่เคยเป็นในชีวิตประจำวัน
+            ภาวะซึมเศร้าจะกินเวลานานเกือบทั้งวัน ทุกวัน เป็นเวลาอย่างน้อย 2 สัปดาห์
+            ผู้ป่วยอาจมีปัญหาการนอนหลับยาก นอนไม่หลับ หรือเบื่ออาหาร มีความรู้สึกไร้ค่า
+            คิดถึงการตาย หมดหวังในอนาคต รู้สึกเหนื่อยง่าย และสมาธิสั้น
+            ปัจจัยที่ก่อให้เกิดภาวะซึมเศร้ามาจากหลายด้าน ทั้งด้านสังคม จิตใจ และสุขภาพร่างกาย
+            ผู้ที่เคยผ่านประสบการณ์เลวร้าย เช่น การถูกทารุณกรรมหรือการสูญเสียรุนแรงเหตุการณ์สะเทือนใจ
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- damage section-->
+  <section class="bg-light" id="damage">
+    <div class="container">
+      <div class="text-center">
+        <h2 class="pb-md-4">ระดับความรุนแรงของโรคซึมเศร้า</h2>
+      </div>
+      <div class="row text-center">
+        <div class="col-md-3">
+          <div class="circle-icon">
+            <img src="css/image/Picture1.png" alt="ไม่มีอาการ">
+          </div>
+          <h4 class="my-3">ไม่มีอาการ</h4>
+          <h5 class="my-3">(Asymptomatic Depression)</h5>
+          <p class="text-muted">ไม่พบอาการ อาจจะกำลังเจอปัญหากับความเครียดหรือความเศร้า
+            แต่ยังคงสามารถแก้ไขปัญหาได้สามารถดำเนินชีวิตได้ตามปกติ </p>
+        </div>
+        <div class="col-md-3">
+          <div class="circle-icon">
+            <img src="css/image/Picture2.png" alt="ระดับเบา">
+          </div>
+          <h4 class="my-3">ระดับเบา</h4>
+          <h5 class="my-3">(Mild Depression)</h5>
+          <p class="text-muted">มีอาการซึมเศร้าเล็กน้อยทั้งนี้ยังสามารถทำกิจวัตรประจำวันได้ปกติ แต่อาจรู้สึกเหนื่อยล้า
+            ไม่มีแรงจูงใจ
+            ยังคงทำงานและมีปฏิสัมพันธ์กับคนรอบข้างได้</p>
+        </div>
+        <div class="col-md-3">
+          <div class="circle-icon">
+            <img src="css/image/Picture3.png" alt="ระดับปานกลาง">
+          </div>
+          <h4 class="my-3">ระดับปานกลาง</h4>
+          <h5 class="my-3">(Moderate Depression)</h5>
+          <p class="text-muted">อาการซึมเศร้าส่งผลต่อการดำเนินชีวิตประจำวัน ทำให้มีปัญหาในการทำงาน
+            และความสัมพันธ์กับคนอื่น ผู้ป่วยอาจมีปัญหาการนอนหลับ ความคิดเชิงลบเกี่ยวกับตัวเอง และอารมณ์แปรปรวน</p>
+        </div>
+        <div class="col-md-3">
+          <div class="circle-icon">
+            <img src="css/image/Picture4.png" alt="ระดับรุนแรง">
+          </div>
+          <h4 class="my-3">ระดับรุนแรง</h4>
+          <h5 class="my-3">(Severe Depression)</h5>
+          <p class="text-muted">อาการซึมเศร้ารุนแรงมากจนทำให้ไม่สามารถทำกิจวัตรประจำวันได้อย่างสมบูรณ์
+            มีความคิดที่จะฆ่าตัวตายหรือทำร้ายตัวเอง มีอาการหลงผิดหรือประสาทหลอน
+            อาจต้องการการรักษาทางการแพทย์ผู้เชียวชาญ</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- Patient Health Questionnaire section-->
+  <section class="bg-gradient" id="Questionnaire">
+    <div class="container px-4">
+      <div class="row gx-4 justify-content-center">
+        <div class="row gx-4 justify-content-center pb-5">
+          <div class="col-lg-8">
+            <h2>ลองทำแบบประเมินภาวะซึมเศร้ากันเถอะ</h2>
+          </div>
+          <div class="col-lg-8">
+            <p class="lead-h">สำคัญแค่ไหนที่เราต้องรู้จักตัวเอง</p>
+            <p class="lead-n">
+              ในยุคสมัยที่ทุกอย่างเปลี่ยนแปลงไปอย่างรวดเร็ว ทั้งด้านเทคโนโลยี การทำงาน และสังคม
+              การดูแลสุขภาพจิตของเราเป็นสิ่งสำคัญที่ไม่ควรมองข้าม
+              ภาวะซึมเศร้าเป็นหนึ่งในปัญหาสุขภาพจิตที่มีผลกระทบอย่างมากต่อชีวิตประจำวัน
+              และหากไม่ได้รับการดูแลอย่างเหมาะสม อาจนำไปสู่ปัญหาสุขภาพที่รุนแรงขึ้น
+            </p>
+            <p class="lead-h">แบบประเมินภาวะซึมเศร้าคืออะไร</p>
+            <p class="lead-n">
+              แบบประเมินภาวะซึมเศร้าเป็นเครื่องมือที่ใช้ในการประเมินภาวะสุขภาพจิตของเรา
+              ช่วยให้เรารู้ตัวว่ากำลังเผชิญกับภาวะซึมเศร้าหรือไม่ และอยู่ในระดับใด
+              การทำแบบประเมินนี้จะช่วยให้เราได้รับการวินิจฉัยเบื้องต้น
+              และสามารถตัดสินใจได้ว่าจะไปพบแพทย์หรือนักจิตวิทยาเพื่อรับการดูแลต่อไป
+            </p>
+            <p class="lead-h">ทำไมคุณควรลองทำแบบประเมินภาวะซึมเศร้า</p>
+            <ul class="lead-n">
+              <li>รู้จักตัวเองมากขึ้น: การทำแบบประเมินภาวะซึมเศร้าจะช่วยให้คุณเข้าใจตัวเองและสภาพจิตใจของคุณในขณะนี้
+                ซึ่งเป็นก้าวแรกในการดูแลสุขภาพจิตที่ดี</li>
+              <li>การวินิจฉัยเบื้องต้น: คุณจะได้รับการวินิจฉัยเบื้องต้นเกี่ยวกับภาวะซึมเศร้า
+                ซึ่งจะช่วยให้คุณสามารถตัดสินใจได้ว่าจะต้องการความช่วยเหลือเพิ่มเติมหรือไม่</li>
+              <li>การดูแลสุขภาพจิต: การรู้ตัวเองว่ามีภาวะซึมเศร้าหรือไม่
+                จะช่วยให้คุณสามารถหาวิธีการดูแลสุขภาพจิตได้อย่างเหมาะสม เช่น การพบแพทย์ การออกกำลังกาย
+                หรือการพูดคุยกับคนใกล้ชิด</li>
+            </ul>
+            <p class="lead-h">แบบประเมินภาวะซึมเศร้าที่เรานำเสนอ</p>
+            <p class="lead-n">
+              เราได้มีการใช้แบบทดสอบในการประเมินระดับภาวะซึมเศร้าในขั้นต้นที่เหมาะสมสำหรับนักศึกษา (Patient Health
+              Questionnaire หรือ PHQ-9)
+              ซึ่งแบบประเมินภาวะซึมเศร้าที่เข้าใจง่ายและสามารถทำได้ที่บ้าน คุณสามารถเลือกได้ระหว่าง
+              แบบทดสอบภาวะซึมเศร้าด้วยเสียง ซึ่งเป็นการใช้ปัญญาประดิษฐ์ในการวิเคราะห์เสียง
+              หรือ แบบทดสอบภาวะซึมเศร้าด้วยตัวเลือกตอบคำถาม ซึ่งเป็นแบบทดสอบที่คุณสามารถตอบคำถามได้ง่ายๆ
+            </p>
+            <p class="lead-h">มาเริ่มดูแลสุขภาพจิตกันเถอะ</p>
+            <p class="lead-n">
+              ไม่ว่าคุณจะรู้สึกว่าตัวเองอยู่ในภาวะซึมเศร้าหรือไม่
+              การลองทำแบบประเมินภาวะซึมเศร้าเป็นการเริ่มต้นที่ดีในการดูแลสุขภาพจิตของตัวเอง มาเริ่มกันเลย!
+            </p>
+          </div>
+        </div>
+        <div class="col-md-6 d-flex flex-column align-items-center mb-5">
+          <div class="card shadow-sm p-3 mb-5 bg-white rounded" style="width: 100%; max-width: 400px;">
+            <img src="css/image/ai-voice.jpeg" alt="Your Image Description" class="card-img-top mx-auto mt-3"
+              style="max-width: 50%; height: auto;">
+            <div class="card-body text-center">
+              <h4 class="card-title my-3">Speech To Text</h4>
+              <p class="card-text" style="opacity: 0.7;">แบบทดสอบภาวะซึมเศร้าด้วยเสียง</p>
+              <button class="btn btn-primary" onclick="window.location.href='/recode'">กดเพื่อเริ่มทำแบบทดสอบ</button>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 d-flex flex-column align-items-center mb-5">
+          <div class="card shadow-sm p-3 mb-5 bg-white rounded" style="width: 100%; max-width: 400px;">
+            <img src="css/image/phq9-Q.jpeg" alt="Your Image Description" class="card-img-top mx-auto mt-3"
+              style="max-width: 50%; height: auto;">
+            <div class="card-body text-center">
+              <h4 class="card-title my-3">Choice</h4>
+              <p class="card-text" style="opacity: 0.7;">แบบทดสอบภาวะซึมเศร้าด้วยตัวเลือกตอบคำถาม</p>
+              <button class="btn btn-primary" onclick="window.location.href='/choice'">กดเพื่อเริ่มทำแบบทดสอบ</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- Footer-->
+  <footer class=" bg-light-gray" style="padding-top: 2%;">
+    <div class="container px-4">
+      <div class="row">
+        <div class="col-md-8 text-start text-black">
+          <p class="m-0">Phuean Jai Speech to text 2024</p>
+          <a class="small-img">
+            <img class="small-img" style="padding-top: 2%;" src="css/image/fotter.png" alt="wu logo"> 
+          </a>
+        </div>
+        <div class="col-md-4 text-end text-black">
+          <p class="m-0" style="text-align: center;">สาขาวิศวกรรมคอมพิวเตอร์และปัญญาประดิษฐ์ </p>
+          <p class="m-0" style="text-align: center;">สำนักวิชาวิศวกรรมศาสตร์และเทคโนโลยี </p>
+          <p class="m-0" style="text-align: center;">มหาวิทยาลัยวลัยลักษณ์ ตำบล ไทยบุรี อำเภอท่าศาลา นครศรีธรรมราช 80160</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Bootstrap core JS-->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Core theme JS-->
+  <script src="js/scripts.js"></script>
+</body>
+
+</html>
